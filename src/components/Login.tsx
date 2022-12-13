@@ -2,32 +2,35 @@ import React from 'react';
 import { useState } from 'react';
 import traveller from '../assets/traveller.png';
 import { Link } from 'react-router-dom';
-import {getUser} from '../services/index' ;
-import {User} from '../interfaces';
+import { getUser, getVisits } from '../services/index';
+import { User, Visits } from '../interfaces';
 
 interface Props {
   setUser: React.Dispatch<React.SetStateAction<User | null>>,
+  setVisits: React.Dispatch<React.SetStateAction<Visits | undefined>>;
 }
 
-const Login: React.FC<Props> = ({setUser}) => {
+const Login: React.FC<Props> = ({ setUser, setVisits }) => {
 
   const [username, setUsername] = useState('');
   const [passwordHash, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  async function handleLogin(event: any) {    
-      event.preventDefault();   
-      try {
-        const user = await getUser({
-          username, passwordHash,
-        })
-        console.log(user);
-        window.localStorage.setItem('loggedUser', JSON.stringify(user))
-        setUser(user);
-      } catch (exception) {
-        console.log(exception);
-        setErrorMessage("Username or password was incorrect.");
-      }
+  async function handleLogin(event: any) {
+    event.preventDefault();
+    try {
+      const user = await getUser({
+        username, passwordHash,
+      });
+      window.localStorage.setItem('loggedUser', JSON.stringify(user));
+      setUser(user);
+      const visits = await getVisits(user._id);
+      window.localStorage.setItem("userVisits", JSON.stringify(visits));
+      setVisits(visits);
+    } catch(exception) {
+      console.log(exception);
+      setErrorMessage("Username or password was incorrect.");
+    }
   }
 
   return (
@@ -50,8 +53,8 @@ const Login: React.FC<Props> = ({setUser}) => {
           <h1>Sign In</h1>
           <form className="login-form" onSubmit={handleLogin} >
             {errorMessage === '' ? null : <p className="errormessage">{errorMessage}</p>}
-            <input className="login-form-input" placeholder="Username" value={username} onChange={({target}) => setUsername(target.value)} required></input>
-            <input className="login-form-input" placeholder="Password" value={passwordHash} onChange={({target}) => setPassword(target.value)} type="password" required></input>
+            <input className="login-form-input" placeholder="Username" value={username} onChange={({ target }) => setUsername(target.value)} required></input>
+            <input className="login-form-input" placeholder="Password" value={passwordHash} onChange={({ target }) => setPassword(target.value)} type="password" required></input>
             <button className="login-form-submit" type="submit">Login</button>
           </form>
           <div className="login-links">
@@ -60,7 +63,7 @@ const Login: React.FC<Props> = ({setUser}) => {
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export default Login;

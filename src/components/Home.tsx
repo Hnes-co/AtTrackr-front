@@ -1,41 +1,26 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import '../App.css';
-import {User} from '../interfaces';
+import { User, Visits } from '../interfaces';
 import UserProfile from './UserProfile';
-import Login from './Login'
+import Login from './Login';
 
 interface Props {
   user: User | null,
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
+  setUser: React.Dispatch<React.SetStateAction<User | null>>,
+  setVisits: React.Dispatch<React.SetStateAction<Visits | undefined>>;
 }
 
-const Home: React.FC<Props> = ({user, setUser}) => {
-
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser');
-    if(loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-    }
-  }, [])// eslint-disable-line react-hooks/exhaustive-deps
-
-  if(window.localStorage.getItem('loggedUser') && user) {
+const Home: React.FC<Props> = ({ user, setUser, setVisits }) => {
+  if(user) {
     return (
-      <UserProfile 
-        user={user} 
-        setUser={setUser} 
-      >
-      </UserProfile>
-    )
+      <UserProfile user={user} setUser={setUser} />
+    );
   }
   else {
     return (
-      <Login
-        setUser={setUser}
-      >
-      </Login>
+      <Login setUser={setUser} setVisits={setVisits} />
     );
   }
-}
+};
 
 export default Home;
