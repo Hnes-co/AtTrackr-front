@@ -1,2 +1,15 @@
-# AtTrackr front-end react-app
-https://attraction-tracker.herokuapp.com/
+# AtTrackr 
+
+- Save your favourite places you've visited and plan future travels
+- Personal user profile
+
+### Installation
+
+´´´bash
+git clone https://github.com/Hnes-co/AtTrackr-front.git
+npm install
+npm start
+´´´
+
+### Back-end
+https://github.com/Hnes-co/AtTrackr-back
