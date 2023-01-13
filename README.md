@@ -5,11 +5,11 @@
 
 ### Installation
 
-´´´bash
+```bash
 git clone https://github.com/Hnes-co/AtTrackr-front.git
 npm install
 npm start
-´´´
+```
 
 ### Back-end
 https://github.com/Hnes-co/AtTrackr-back
