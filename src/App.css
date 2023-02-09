@@ -183,7 +183,6 @@
   display: flex;
   justify-content: center;
   margin: 2rem;
-  min-height: 60vh;
 }
 
 .profile-picture {
@@ -247,6 +246,10 @@
   width: 100%;
 }
 
+.profile .title {
+  font-size: 16pt;
+}
+
 .dialog-form {
   display: flex;
   flex-direction: column;
@@ -290,7 +293,6 @@
 .login-link {
   padding: 0.5rem;
   margin: 0.5rem;
-  font-size: 0.8rem;
   text-decoration: none;
   color: gray;
 }
@@ -443,7 +445,7 @@
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content label:hover {
+.dropdown-content a:hover {
   background-color: rgb(187, 187, 187);
   cursor: pointer;
 }
@@ -612,10 +614,6 @@ input::-webkit-inner-spin-button {
   text-align: center;
 }
 
-.visitdialog-title-button svg {
-  margin-left: 0.25rem;
-}
-
 .visitdialog-title-button:hover {
   background-color: #309b30;
   cursor: pointer;
@@ -678,32 +676,32 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
   margin-bottom: 3rem;
-  width: 90%;
-  padding-bottom: 1rem;
+  width: calc(90% - 2rem);
   box-shadow: 0 0 10px #282828;
   border-radius: 5px;
   background-color: whitesmoke;
-}
-
-.visitlist-header-title {
-  font-size: 1.5rem;
-  font-weight: bold;
+  padding: 1rem;
 }
 
 .visitlist-header-content {
   display: flex;
-  justify-content: space-between;
-  width: 90%;
+  justify-content: space-evenly;
+  width: 100%;
 }
 
-.visitlist-header-content label {
+.visitlist-header-content button {
+  all: unset;
   display: flex;
   align-items: center;
   font-size: 1.2rem;
 }
 
-.visitlist-header-content label:hover {
+.visitlist-header-content button:hover {
   cursor: pointer;
+}
+
+.visitlist-header-content button:focus-visible {
+  outline: auto;
 }
 
 .visitlist-grid {
@@ -711,7 +709,7 @@ input::-webkit-inner-spin-button {
   width: 90%;
   display: grid;
   justify-content: center;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   grid-auto-rows: 18rem;
   grid-gap: 1rem;
 }
@@ -791,12 +789,6 @@ input::-webkit-inner-spin-button {
   background-color: #505050;
 }
 
-@media only screen and (min-width: 2000px) {
-  .visitlist-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
-
 @media only screen and (max-width: 1350px) {
   .content-aligner {
     display: none;
@@ -820,10 +812,6 @@ input::-webkit-inner-spin-button {
 
   .addPlace {
     width: 60%;
-  }
-
-  .visitlist-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
   .visitlist-container .map-container {
@@ -905,16 +893,18 @@ input::-webkit-inner-spin-button {
     min-width: max-content;
   }
 
-  .dropdown-content-nav label {
+  .dropdown-content-nav a {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
+    text-decoration: none;
   }
 
-  .dropdown-content-nav label svg {
+  .dropdown-content-nav a svg {
     width: 30px;
     height: 30px;
+    color: #282828;
   }
 
   .dropdown-content-nav span {
@@ -925,25 +915,12 @@ input::-webkit-inner-spin-button {
     margin-left: 0.5rem;
   }
 
-  .visitlist-grid-item {
-    font-size: 1rem;
-  }
-
-  .grid-item-title-name {
-    font-size: 1.5rem;
-  }
-
   .desc-item {
     font-size: 1.5rem;
   }
 }
 
 @media only screen and (max-width: 800px) {
-  .visitlist-grid {
-    grid-template-columns: minmax(0, 1fr);
-    grid-auto-rows: 15rem;
-  }
-
   .visitdialog-info-coords {
     flex-direction: column;
   }
@@ -1012,9 +989,23 @@ input::-webkit-inner-spin-button {
   .desc-item {
     font-size: 1rem;
   }
+
+  .visitlist-grid-item {
+    font-size: 1rem;
+  }
+
+  .grid-item-title-name {
+    font-size: 1.5rem;
+  }
 }
 
 @media only screen and (max-width: 450px) {
+
+  .visitlist-grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: 15rem;
+  }
+
   .home-header .header-title {
     margin-right: 0;
   }

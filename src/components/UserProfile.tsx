@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import defaultProfilePic from '../assets/traveller-edited.png';
 import { User } from '../interfaces';
 import { editUser } from '../services/index';
@@ -32,12 +32,12 @@ const Transition = React.forwardRef(
 
 const UserProfile: React.FC<Props> = ({ user, setUser }) => {
 
-  const [country, setCountry] = useState<string>(user.country);
-  const [profilePic, setProfilePic] = useState<string>(user.profilePic);
-  const [disabled, setDisabled] = useState(true);
-  const [name, setName] = useState<string>(user.name);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<HTMLInputElement>(null);
+  const profilePicRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [passwordHash, setPassword] = useState<string>('');
+  const [disabled, setDisabled] = useState(true);
   const [message, setMessage] = useState({ type: '', message: '' });
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const buttonClassnames = [
@@ -59,23 +59,31 @@ const UserProfile: React.FC<Props> = ({ user, setUser }) => {
   async function handleUserEdit(event: any) {
     event.preventDefault();
     const username = user.username;
-    try {
-      const updatedUser = await editUser({ name, country, profilePic, username, passwordHash });
-      setUser(updatedUser);
-      window.localStorage.setItem('loggedUser', JSON.stringify(updatedUser));
-      setMessage({ type: 'success', message: 'User data updated successfully!' });
-      setDisabled(!disabled);
-    } catch(exception) {
-      console.log(exception);
-      setMessage({ type: 'error', message: 'User data update failed' });
+    const name = nameRef.current?.value;
+    const country = countryRef.current?.value;
+    const profilePic = profilePicRef.current?.value;
+    if(passwordRef.current) {
+      try {
+        const updatedUser = await editUser({
+          name: name === "" || null ? user.name : name,
+          country: country === "" || null ? user.country : country,
+          profilePic: profilePic === "" || null ? user.profilePic : profilePic,
+          username,
+          passwordHash: passwordRef.current.value
+        });
+        setUser(updatedUser);
+        window.localStorage.setItem('loggedUser', JSON.stringify(updatedUser));
+        setDialogOpen(false);
+        setDisabled(!disabled);
+        passwordRef.current.value = "";
+      } catch(exception) {
+        console.log(exception);
+        setMessage({ type: 'error', message: 'User data update failed' });
+      }
     }
-    setPassword('');
   }
 
   function resetProfile() {
-    setName(user.name);
-    setCountry(user.country);
-    setProfilePic(user.profilePic);
     setDialogOpen(false);
     setDisabled(true);
   }
@@ -90,35 +98,34 @@ const UserProfile: React.FC<Props> = ({ user, setUser }) => {
       />
       <div className="profile-content">
         <div className="profile-picture">
-          <img src={profilePic === '' ? defaultProfilePic : profilePic} alt="defaultProfilePic.png"></img>
+          <img src={user.profilePic === "" ? defaultProfilePic : user.profilePic} alt="defaultProfilePic.png"></img>
         </div>
         <div className="profile">
           <div className="profile-header">
             <div className="profile-header-title">My Profile</div>
-            <div title={disabled ? "Edit profile" : "Save changes"} className="profile-header-button" onClick={handleProfileEdit}>{disabled ? <EditIcon /> : <CheckIcon />}</div>
+            <button title={disabled ? "Edit profile" : "Save changes"} className="profile-header-button" onClick={handleProfileEdit}>{disabled ? <EditIcon /> : <CheckIcon />}</button>
           </div>
           <div className="profile-info profile-info-name">
             <div className="profile-info-container">
-              <div className="title title-name">NAME</div>
-              <input className="info-input info-input-name" type="text" maxLength={20} disabled={disabled} value={name} onChange={({ target }) => setName(target.value)}></input>
+              <div className="title title-name">{user.name}</div>
+              <input ref={nameRef} className="info-input info-input-name" type="text" maxLength={20} hidden={disabled} placeholder="New name" />
             </div>
           </div>
           <div className="profile-info profile-info-country">
             <div className="profile-info-container">
-              <div className="title title-country">COUNTRY</div>
-              <input className="info-input info-input-country" type="text" maxLength={30} disabled={disabled} value={country} onChange={({ target }) => setCountry(target.value)}></input>
-            </div>
-          </div>
-          <div className="profile-info profile-info-username">
-            <div className="profile-info-container">
-              <div className="title title-username">USERNAME</div>
-              <input className="info-input info-input-username" value={user.username} disabled></input>
+              <div className="title title-country">{user.country}</div>
+              <input ref={countryRef} className="info-input info-input-country" type="text" maxLength={30} hidden={disabled} placeholder="New country" />
             </div>
           </div>
           <div className="profile-info profile-info-picturelink">
             <div className="profile-info-container">
-              <div className="title title-picturelink" hidden={disabled}>LINK TO PROFILE PICTURE</div>
-              <input hidden={disabled} className="info-input" type="text" maxLength={100} value={profilePic} disabled={disabled} onChange={({ target }) => setProfilePic(target.value)}></input>
+              <div className="title title-picturelink" hidden={disabled}>Link to profile picture</div>
+              <input ref={profilePicRef} hidden={disabled} className="info-input" type="text" maxLength={100} />
+            </div>
+          </div>
+          <div className="profile-info profile-info-username">
+            <div className="profile-info-container">
+              <div className="title title-username">{user.username}</div>
             </div>
           </div>
         </div>
@@ -136,7 +143,7 @@ const UserProfile: React.FC<Props> = ({ user, setUser }) => {
         <form onSubmit={handleUserEdit}>
           <DialogContent>
             <div className="dialog-form">
-              <input className="info-input info-input-password" placeholder="Password" value={passwordHash} onChange={({ target }) => setPassword(target.value)} type="password" required></input>
+              <input ref={passwordRef} className="info-input info-input-password" placeholder="Password" type="password" required />
               <label className={"message-" + message.type}>{message.message}</label>
             </div>
           </DialogContent>

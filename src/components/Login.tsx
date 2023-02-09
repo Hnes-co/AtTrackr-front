@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { FormEvent } from 'react';
+import { useState, useRef } from 'react';
 import traveller from '../assets/traveller.png';
 import { Link } from 'react-router-dom';
 import { getUser, getVisits } from '../services/index';
@@ -12,15 +12,17 @@ interface Props {
 
 const Login: React.FC<Props> = ({ setUser, setVisits }) => {
 
-  const [username, setUsername] = useState('');
-  const [passwordHash, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const userNameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [infoMessage, setInfoMessage] = useState('');
 
-  async function handleLogin(event: any) {
+  async function handleLogin(event: FormEvent) {
     event.preventDefault();
+    const username = userNameRef.current?.value ?? "";
+    const passwordHash = passwordRef.current?.value ?? "";
     try {
       const user = await getUser({
-        username, passwordHash,
+        username, passwordHash
       });
       window.localStorage.setItem('loggedUser', JSON.stringify(user));
       setUser(user);
@@ -28,8 +30,7 @@ const Login: React.FC<Props> = ({ setUser, setVisits }) => {
       window.localStorage.setItem("userVisits", JSON.stringify(visits));
       setVisits(visits);
     } catch(exception) {
-      console.log(exception);
-      setErrorMessage("Username or password was incorrect.");
+      setInfoMessage("Username or password was incorrect.");
     }
   }
 
@@ -52,13 +53,13 @@ const Login: React.FC<Props> = ({ setUser, setVisits }) => {
         <div className="login">
           <h1>Sign In</h1>
           <form className="login-form" onSubmit={handleLogin} >
-            {errorMessage === '' ? null : <p className="errormessage">{errorMessage}</p>}
-            <input className="login-form-input" placeholder="Username" value={username} onChange={({ target }) => setUsername(target.value)} required></input>
-            <input className="login-form-input" placeholder="Password" value={passwordHash} onChange={({ target }) => setPassword(target.value)} type="password" required></input>
+            <label className="message-error">{infoMessage}</label>
+            <input className="login-form-input" placeholder="Username" ref={userNameRef} required />
+            <input className="login-form-input" placeholder="Password" ref={passwordRef} type="password" required />
             <button className="login-form-submit" type="submit">Login</button>
           </form>
           <div className="login-links">
-            <Link className="login-link" to="/signUp">Not a member yet?</Link>
+            <Link className="login-link" to="/signUp">Sign Up</Link>
           </div>
         </div>
       </div>

@@ -80,13 +80,10 @@ const AddLocation: React.FC<Props> = ({ user, setUser, visits, setVisits }) => {
     }
   }
 
-  function handleCustomCategory(event: any, iconClicked: boolean) {
-    if(event.key === 'Enter' || iconClicked) {
-      event.preventDefault();
-      setCategory(customCategory);
-      setCustomCategory('');
-      setCategoryDropdown(false);
-    }
+  function handleCustomCategory() {
+    setCategory(customCategory);
+    setCustomCategory('');
+    setCategoryDropdown(false);
   }
 
   return (
@@ -191,11 +188,11 @@ const AddLocation: React.FC<Props> = ({ user, setUser, visits, setVisits }) => {
                         placeholder="Custom"
                         className="input-dropdown"
                         maxLength={30}
-                        onKeyDown={(event) => handleCustomCategory(event, false)}
+                        onKeyDown={(event) => event.key === "Enter" ? handleCustomCategory() : null}
                         onChange={({ target }) => setCustomCategory(target.value)}
                         value={customCategory}
                       />
-                      <KeyboardTabIcon onClick={(event) => handleCustomCategory(event, true)}></KeyboardTabIcon>
+                      <KeyboardTabIcon onClick={handleCustomCategory} />
                     </div>
                   </div>
                 </div>

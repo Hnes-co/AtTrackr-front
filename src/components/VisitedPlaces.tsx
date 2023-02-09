@@ -14,6 +14,7 @@ import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import Header from './Header';
 import { Map, Marker } from "pigeon-maps";
+import KeyboardTabIcon from '@mui/icons-material/KeyboardTab';
 
 interface Props {
   user: User | null,
@@ -180,12 +181,9 @@ const VisitedPlaces: React.FC<Props> = ({ user, setUser, visits, setVisits }) =>
     }
   }
 
-  function handleCustomCategory(event: any) {
-    if(event.key === 'Enter') {
-      event.preventDefault();
-      setSelectedVisit({ ...selectedVisit, category: customCategory });
-      setCustomCategory('');
-    }
+  function handleCustomCategory() {
+    setSelectedVisit({ ...selectedVisit, category: customCategory });
+    setCustomCategory('');
   }
 
   return (
@@ -215,19 +213,16 @@ const VisitedPlaces: React.FC<Props> = ({ user, setUser, visits, setVisits }) =>
           </Map>
         </div>
         <div className="visitlist-header">
-          <div className="visitlist-header-title">
-            <label>Sort visits</label>
-          </div>
           <div className="visitlist-header-content">
-            <label onClick={() => sortVisits(1)}>Name<ArrowDropDownIcon /></label>
-            <label onClick={() => sortVisits(3)}>Category<ArrowDropDownIcon /></label>
-            <label onClick={() => sortVisits(2)}>Visited<ArrowDropDownIcon /></label>
-            <label onClick={() => sortVisits(4)}>Date Added<ArrowDropDownIcon /></label>
+            <button onClick={() => sortVisits(1)}>Name<ArrowDropDownIcon /></button>
+            <button onClick={() => sortVisits(3)}>Category<ArrowDropDownIcon /></button>
+            <button onClick={() => sortVisits(2)}>Visited<ArrowDropDownIcon /></button>
+            <button onClick={() => sortVisits(4)}>Date Added<ArrowDropDownIcon /></button>
           </div>
         </div>
         <div className="visitlist-grid">
-          {visits?.map(visit =>
-            <div className="visitlist-grid-item" onClick={(event) => handleVisitClick(visit, event)}>
+          {visits?.map((visit, index) =>
+            <div key={index} className="visitlist-grid-item" onClick={(event) => handleVisitClick(visit, event)}>
               <div className="grid-item grid-item-top">
                 <div className="grid-item-title">
                   <label className="grid-item-title-name">{visit.name}</label>
@@ -259,9 +254,9 @@ const VisitedPlaces: React.FC<Props> = ({ user, setUser, visits, setVisits }) =>
           <div className="visitdialog-title">
             <div>{selectedVisit.name}</div>
             {disabled ?
-              <div className="visitdialog-title-button" onClick={handleVisitEdit}><span>Edit</span><EditLocationAltIcon /></div>
+              <button title="Edit visit" className="visitdialog-title-button" onClick={handleVisitEdit}><EditLocationAltIcon /></button>
               :
-              <div className="visitdialog-title-button" onClick={handleVisitEdit}>Save changes</div>
+              <button className="visitdialog-title-button" onClick={handleVisitEdit}>Save changes</button>
             }
           </div>
           <div className="visitdialog-visited" hidden={!disabled}>{selectedVisit.visited ? 'You have visited this location' : 'You have not visited this location yet'}</div>
@@ -290,7 +285,6 @@ const VisitedPlaces: React.FC<Props> = ({ user, setUser, visits, setVisits }) =>
             </div>
             <div className="visitdialog-info visitdialog-info-category">
               <div className="visitdialog-info-container">
-                <div className="title">Category</div>
                 <div className="dropdown">
                   <div className={disabled ? "title title-category" : "title title-category-active"} onClick={!disabled ? () => setCategoryDropdown(!categoryDropdown) : () => null}>
                     {selectedVisit.category !== '' ? selectedVisit.category : 'No category'} <ArrowDropDownIcon />
@@ -300,15 +294,18 @@ const VisitedPlaces: React.FC<Props> = ({ user, setUser, visits, setVisits }) =>
                     <label onClick={() => setSelectedVisit({ ...selectedVisit, category: 'Nature' })}>Nature</label>
                     <label onClick={() => setSelectedVisit({ ...selectedVisit, category: 'Culture and Heritage' })}>Culture and Heritage</label>
                     <label onClick={() => setSelectedVisit({ ...selectedVisit, category: 'Cities and districts' })}>Cities and districts</label>
-                    <input
-                      type="text"
-                      placeholder="Custom"
-                      className="input-dropdown"
-                      maxLength={30}
-                      onKeyDown={(event) => handleCustomCategory(event)}
-                      onChange={({ target }) => setCustomCategory(target.value)}
-                      value={customCategory}
-                    />
+                    <div className="custom-category">
+                      <input
+                        type="text"
+                        placeholder="Custom"
+                        className="input-dropdown"
+                        maxLength={30}
+                        onKeyDown={(event) => event.key === "Enter" ? handleCustomCategory() : null}
+                        onChange={({ target }) => setCustomCategory(target.value)}
+                        value={customCategory}
+                      />
+                      <KeyboardTabIcon onClick={handleCustomCategory} />
+                    </div>
                   </div>
                 </div>
               </div>

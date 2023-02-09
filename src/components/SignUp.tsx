@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import '../App.css';
 import { Link } from 'react-router-dom';
 import { createUser } from '../services/index';
@@ -7,22 +7,21 @@ import traveller from '../assets/traveller.png';
 
 const SignUp: React.FC = () => {
 
-  const [username, setUsername] = useState('');
-  const [passwordHash, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const userNameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState({ type: '', message: '' });
 
   async function handleCreateUser(event: any) {
     event.preventDefault();
     try {
+      const name = nameRef.current?.value;
+      const username = userNameRef.current?.value ?? "";
+      const passwordHash = passwordRef.current?.value ?? "";
       await createUser({
         name, username, passwordHash,
       });
-      setUsername('');
-      setPassword('');
-      setName('');
       setMessage({ type: 'success', message: 'Account creation successfull! You can now login.' });
-
     } catch(exception) {
       setMessage({ type: 'error', message: 'Account creation failed, username already in use' });
     }
@@ -42,9 +41,9 @@ const SignUp: React.FC = () => {
           <h1>Sign Up</h1>
           <form className="login-form" onSubmit={handleCreateUser}>
             <div className={"message-" + message.type}>{message.message}</div>
-            <input className="login-form-input" placeholder="Name (Optional)" value={name} onChange={({ target }) => setName(target.value)}></input>
-            <input className="login-form-input" placeholder="Username" required value={username} onChange={({ target }) => setUsername(target.value)}></input>
-            <input className="login-form-input" placeholder="Password" required minLength={6} type="password" value={passwordHash} onChange={({ target }) => setPassword(target.value)}></input>
+            <input ref={nameRef} className="login-form-input" placeholder="Name (Optional)" />
+            <input ref={userNameRef} className="login-form-input" placeholder="Username" required minLength={3} />
+            <input ref={passwordRef} className="login-form-input" placeholder="Password" required minLength={6} type="password" />
             <button type="submit" className="login-form-submit">Create Account</button>
           </form>
           <Link className="login-link" to="/">Already have an account?</Link>
