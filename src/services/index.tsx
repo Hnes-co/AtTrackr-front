@@ -10,6 +10,7 @@ export async function createUser(credentials: { name?: string, username: string,
 
 export async function getUser(credentials: { name?: string, username: string, passwordHash: string; }) {
   const url = userBaseUrl + "?username=" + credentials.username + "&passwordHash=" + credentials.passwordHash;
+  console.log(url);
   const response = await axios.get(url);
   return response.data;
 };
