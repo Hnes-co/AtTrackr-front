@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const userBaseUrl = 'http://localhost:3001/api/users';
-const visitBaseUrl = 'http://localhost:3001/api/visits';
+const userBaseUrl = '/api/users';
+const visitBaseUrl = '/api/visits';
 
 export async function createUser(credentials: { name?: string, username: string, passwordHash: string; }) {
   const response = await axios.post(userBaseUrl, credentials);
